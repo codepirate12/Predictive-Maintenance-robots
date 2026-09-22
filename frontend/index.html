@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PredictAI — Industrial Maintenance Intelligence</title>
+    <meta name="description" content="Real-time predictive maintenance system powered by Random Forest ML. Monitor machine telemetry, classify failures, and prevent industrial downtime.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background Grid -->
+    <div class="bg-grid"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Brand -->
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">PredictAI</span>
+                    <span class="brand-sub">Maintenance Intelligence</span>
+                </div>
+            </div>
+
+            <!-- Nav -->
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-page="dashboard" id="nav-dashboard">
+                    <span class="nav-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Dashboard</span>
+                    <span class="nav-pip"></span>
+                </button>
+                <button class="nav-btn" data-page="prediction" id="nav-prediction">
+                    <span class="nav-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Machine Prediction</span>
+                    <span class="nav-pip"></span>
+                </button>
+                <button class="nav-btn" data-page="explorer" id="nav-explorer">
+                    <span class="nav-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <line x1="10" y1="9" x2="8" y2="9"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Dataset Explorer</span>
+                    <span class="nav-pip"></span>
+                </button>
+                <button class="nav-btn" data-page="performance" id="nav-performance">
+                    <span class="nav-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Model Performance</span>
+                    <span class="nav-pip"></span>
+                </button>
+                <button class="nav-btn" data-page="about" id="nav-about">
+                    <span class="nav-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">About Project</span>
+                    <span class="nav-pip"></span>
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <div class="api-status-row">
+                    <span class="status-pulse" id="api-status-dot"></span>
+                    <span class="status-text" id="api-status-text">Connecting...</span>
+                </div>
+                <div class="footer-stack">
+                    <span>FastAPI · Scikit-Learn · RF Model</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- ======================================
+                 PAGE 1: DASHBOARD
+            ====================================== -->
+            <section id="page-dashboard" class="page-section active">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <div class="page-eyebrow">
+                            <span class="eyebrow-dot"></span>
+                            Live System Overview
+                        </div>
+                        <h1>Industrial Monitoring Dashboard</h1>
+                        <p class="subtitle">Real-time telemetry analytics from 10,000 AI4I 2020 machine records</p>
+                    </div>
+                    <div class="page-header-right">
+                        <div class="live-badge">
+                            <span class="live-dot"></span>
+                            LIVE
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card kpi-blue" id="kpi-card-1">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Total Machines</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="kpi-total-machines">10,000</span>
+                            </div>
+                            <span class="kpi-sub">AI4I 2020 Dataset</span>
+                        </div>
+                        <div class="kpi-trend up">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                            Full Dataset
+                        </div>
+                    </div>
+
+                    <div class="kpi-card kpi-red" id="kpi-card-2">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Recorded Failures</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="kpi-total-failures">339</span>
+                            </div>
+                            <span class="kpi-sub">Identified Fault Cases</span>
+                        </div>
+                        <div class="kpi-trend warn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                            Critical Events
+                        </div>
+                    </div>
+
+                    <div class="kpi-card kpi-green" id="kpi-card-3">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Normal Operation</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="kpi-normal-machines">9,661</span>
+                            </div>
+                            <span class="kpi-sub">Optimal Status</span>
+                        </div>
+                        <div class="kpi-trend up">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                            Healthy
+                        </div>
+                    </div>
+
+                    <div class="kpi-card kpi-amber" id="kpi-card-4">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"/>
+                                <line x1="12" y1="20" x2="12" y2="4"/>
+                                <line x1="6" y1="20" x2="6" y2="14"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Failure Rate</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="kpi-failure-rate">3.39%</span>
+                            </div>
+                            <span class="kpi-sub">Class Imbalance Ratio</span>
+                        </div>
+                        <div class="kpi-trend warn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            Imbalanced
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div class="chart-card-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                                    <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                                </svg>
+                                Failure Distribution
+                            </div>
+                            <span class="chart-badge">Doughnut</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chart-failure-dist"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div class="chart-card-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                    <line x1="9" y1="21" x2="9" y2="9"/>
+                                </svg>
+                                Failures by Product Type
+                            </div>
+                            <span class="chart-badge">Bar</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chart-product-type"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div class="chart-card-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="7" cy="14" r="1"/><circle cx="11" cy="10" r="1"/><circle cx="16" cy="17" r="1"/><circle cx="20" cy="6" r="1"/>
+                                    <line x1="3" y1="21" x2="21" y2="21"/>
+                                </svg>
+                                Torque vs. Rotational Speed
+                            </div>
+                            <span class="chart-badge">Scatter</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chart-torque-speed"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div class="chart-card-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                </svg>
+                                Tool Wear Distribution
+                            </div>
+                            <span class="chart-badge">Histogram</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chart-tool-wear"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Banner -->
+                <div class="info-banner">
+                    <div class="banner-icon-wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v4l3 3"/>
+                        </svg>
+                    </div>
+                    <div class="banner-content">
+                        <h4>Why Predictive Maintenance Matters</h4>
+                        <p>In modern manufacturing, unscheduled machine downtime causes massive productivity loss. By continuously tracking <strong>Operating Temperatures</strong>, <strong>Rotational Speed</strong>, <strong>Torque</strong>, and <strong>Tool Wear</strong>, machine learning flags subtle anomaly signatures to trigger maintenance before physical failure occurs.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================================
+                 PAGE 2: MACHINE PREDICTION
+            ====================================== -->
+            <section id="page-prediction" class="page-section">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <div class="page-eyebrow">
+                            <span class="eyebrow-dot eyebrow-orange"></span>
+                            AI Inference Engine
+                        </div>
+                        <h1>Real-Time Failure Risk Classifier</h1>
+                        <p class="subtitle">Input machine operational telemetry to evaluate failure probability via Random Forest inference</p>
+                    </div>
+                </div>
+
+                <!-- Preset Bar -->
+                <div class="preset-bar">
+                    <div class="preset-label-row">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        Quick Presets
+                    </div>
+                    <div class="preset-btns">
+                        <button class="preset-btn preset-normal" id="preset-normal">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                            Load Normal Preset
+                        </button>
+                        <button class="preset-btn preset-risk" id="preset-risk">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            Load High Risk Preset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prediction Grid -->
+                <div class="prediction-grid">
+                    <!-- Form Panel -->
+                    <div class="glass-card form-panel">
+                        <div class="panel-header">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                            </svg>
+                            <h3>Operational Parameters</h3>
+                        </div>
+
+                        <form id="prediction-form">
+                            <div class="form-section-label">Product & Wear</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="input-type">Product Quality Variant</label>
+                                    <div class="select-wrap">
+                                        <select id="input-type" class="form-control">
+                                            <option value="L">L — Low Quality (50%)</option>
+                                            <option value="M" selected>M — Medium Quality (30%)</option>
+                                            <option value="H">H — High Quality (20%)</option>
+                                        </select>
+                                        <svg class="select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-tool-wear">Tool Wear — <span class="accent-val" id="val-wear">50</span> min</label>
+                                    <div class="slider-wrap">
+                                        <input type="range" id="input-tool-wear" min="0" max="300" value="50" class="styled-slider">
+                                        <div class="slider-track-fill" id="slider-track-fill"></div>
+                                    </div>
+                                    <div class="slider-range-labels"><span>0 min</span><span>300 min</span></div>
+                                </div>
+                            </div>
+
+                            <div class="form-section-label">Temperature Sensors [K]</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="input-air-temp">Air Temperature [K]</label>
+                                    <div class="input-wrap">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                                        <input type="number" id="input-air-temp" step="0.1" min="290.0" max="310.0" value="298.1" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-proc-temp">Process Temperature [K]</label>
+                                    <div class="input-wrap">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                                        <input type="number" id="input-proc-temp" step="0.1" min="300.0" max="320.0" value="308.6" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section-label">Mechanical Sensors</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="input-rpm">Rotational Speed [rpm]</label>
+                                    <div class="input-wrap">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                                        <input type="number" id="input-rpm" step="10" min="1000" max="3000" value="1500" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-torque">Torque [Nm]</label>
+                                    <div class="input-wrap">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                                        <input type="number" id="input-torque" step="0.5" min="0.0" max="100.0" value="40.0" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Subsystem Alerts -->
+                            <details class="advanced-details" id="advanced-details">
+                                <summary>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    Subsystem Sensor Alerts (Advanced)
+                                    <svg class="summary-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                </summary>
+                                <div class="fault-grid">
+                                    <label class="fault-toggle" for="check-twf">
+                                        <input type="checkbox" id="check-twf">
+                                        <div class="fault-btn-body">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                            <span>TWF</span>
+                                            <small>Tool Wear Failure</small>
+                                        </div>
+                                    </label>
+                                    <label class="fault-toggle" for="check-hdf">
+                                        <input type="checkbox" id="check-hdf">
+                                        <div class="fault-btn-body">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l4-4 4 4"/><path d="M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22"/><path d="m20 22-5-5"/></svg>
+                                            <span>HDF</span>
+                                            <small>Heat Dissipation</small>
+                                        </div>
+                                    </label>
+                                    <label class="fault-toggle" for="check-pwf">
+                                        <input type="checkbox" id="check-pwf">
+                                        <div class="fault-btn-body">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                            <span>PWF</span>
+                                            <small>Power Failure</small>
+                                        </div>
+                                    </label>
+                                    <label class="fault-toggle" for="check-osf">
+                                        <input type="checkbox" id="check-osf">
+                                        <div class="fault-btn-body">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                                            <span>OSF</span>
+                                            <small>Overstrain Failure</small>
+                                        </div>
+                                    </label>
+                                    <label class="fault-toggle" for="check-rnf">
+                                        <input type="checkbox" id="check-rnf">
+                                        <div class="fault-btn-body">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                                            <span>RNF</span>
+                                            <small>Random Failure</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </details>
+
+                            <button type="submit" class="btn-predict" id="btn-predict">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                                <span id="btn-predict-text">Run Failure Prediction</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Result Panel -->
+                    <div class="glass-card result-panel" id="result-container">
+                        <div class="panel-header">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                            <h3>Prediction Output</h3>
+                        </div>
+
+                        <!-- Placeholder -->
+                        <div id="result-placeholder" class="result-placeholder">
+                            <div class="placeholder-orb">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                            </div>
+                            <p class="placeholder-title">Awaiting Inference</p>
+                            <p class="placeholder-sub">Configure parameters and run prediction to see failure risk analysis</p>
+                        </div>
+
+                        <!-- Active Result -->
+                        <div id="result-active" class="result-active hidden">
+                            <!-- Status Banner -->
+                            <div class="result-status-banner" id="res-badge">
+                                <div class="status-icon-wrap" id="res-status-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m9 12 2 2 4-4"/>
+                                        <circle cx="12" cy="12" r="10"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="status-title" id="res-badge-text">Machine Condition Normal</div>
+                                    <div class="status-sub" id="res-badge-sub">No failure risk detected</div>
+                                </div>
+                            </div>
+
+                            <!-- Gauge -->
+                            <div class="gauge-section">
+                                <div class="gauge-wrap">
+                                    <svg class="gauge-svg" viewBox="0 0 200 120">
+                                        <defs>
+                                            <linearGradient id="gaugeGradGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#10b981"/>
+                                                <stop offset="100%" style="stop-color:#34d399"/>
+                                            </linearGradient>
+                                            <linearGradient id="gaugeGradRed" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#f59e0b"/>
+                                                <stop offset="100%" style="stop-color:#ef4444"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <!-- Track -->
+                                        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="14" stroke-linecap="round"/>
+                                        <!-- Fill -->
+                                        <path id="gauge-fill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGradGreen)" stroke-width="14" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+                                        <!-- Needle -->
+                                        <line id="gauge-needle" x1="100" y1="100" x2="100" y2="30" stroke="#f8fafc" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 100)"/>
+                                        <circle cx="100" cy="100" r="5" fill="#f8fafc"/>
+                                    </svg>
+                                    <div class="gauge-label">
+                                        <span class="gauge-pct" id="gauge-fail-pct">0%</span>
+                                        <span class="gauge-sub">Failure Probability</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Probability Bars -->
+                            <div class="prob-list">
+                                <div class="prob-row">
+                                    <div class="prob-row-header">
+                                        <span class="prob-label">
+                                            <span class="prob-dot green-dot"></span>Normal Probability
+                                        </span>
+                                        <span class="prob-pct green-text" id="res-normal-prob">95.0%</span>
+                                    </div>
+                                    <div class="prob-bar-bg">
+                                        <div class="prob-bar-fill prob-bar-green" id="bar-normal-prob" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div class="prob-row">
+                                    <div class="prob-row-header">
+                                        <span class="prob-label">
+                                            <span class="prob-dot red-dot"></span>Failure Probability
+                                        </span>
+                                        <span class="prob-pct red-text" id="res-fail-prob">5.0%</span>
+                                    </div>
+                                    <div class="prob-bar-bg">
+                                        <div class="prob-bar-fill prob-bar-red" id="bar-fail-prob" style="width: 5%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Risk Level -->
+                                <div class="risk-chip-wrap">
+                                    <span class="risk-label-txt">Risk Assessment</span>
+                                    <span class="risk-chip" id="res-risk-chip">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                                        <span id="res-risk-level">LOW RISK</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Parameter Summary -->
+                            <div class="summary-table-wrap">
+                                <div class="summary-table-label">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                    Submitted Parameters
+                                </div>
+                                <table class="mini-table">
+                                    <tbody id="summary-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <p class="disclaimer-note">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                                Model inference via Random Forest Classifier — probabilistic estimate only.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================================
+                 PAGE 3: DATASET EXPLORER
+            ====================================== -->
+            <section id="page-explorer" class="page-section">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <div class="page-eyebrow">
+                            <span class="eyebrow-dot eyebrow-purple"></span>
+                            Data Warehouse
+                        </div>
+                        <h1>AI4I 2020 Dataset Explorer</h1>
+                        <p class="subtitle">Browse, filter, and inspect records from 10,000 industrial machine telemetry entries</p>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label for="filter-type">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+                            Product Type
+                        </label>
+                        <div class="select-wrap sm">
+                            <select id="filter-type" class="filter-control">
+                                <option value="All">All Types (L, M, H)</option>
+                                <option value="L">Variant L (Low)</option>
+                                <option value="M">Variant M (Medium)</option>
+                                <option value="H">Variant H (High)</option>
+                            </select>
+                            <svg class="select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-status">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            Status
+                        </label>
+                        <div class="select-wrap sm">
+                            <select id="filter-status" class="filter-control">
+                                <option value="All">All Statuses</option>
+                                <option value="Normal">Normal (0)</option>
+                                <option value="Failure">Failure (1)</option>
+                            </select>
+                            <svg class="select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-limit">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            Page Size
+                        </label>
+                        <div class="select-wrap sm">
+                            <select id="filter-limit" class="filter-control">
+                                <option value="15">15 rows</option>
+                                <option value="25" selected>25 rows</option>
+                                <option value="50">50 rows</option>
+                            </select>
+                            <svg class="select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+                    <div class="filter-record-count" id="table-record-count">Showing records...</div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-panel">
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>UDI</th>
+                                    <th>Product ID</th>
+                                    <th>Type</th>
+                                    <th>Air Temp [K]</th>
+                                    <th>Process Temp [K]</th>
+                                    <th>Speed [rpm]</th>
+                                    <th>Torque [Nm]</th>
+                                    <th>Wear [min]</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataset-table-body">
+                                <tr><td colspan="9" class="loading-td">
+                                    <div class="loading-row">
+                                        <svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                                        Loading dataset records...
+                                    </div>
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-bar">
+                        <button class="page-btn" id="btn-prev-page" disabled>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                            Previous
+                        </button>
+                        <span class="page-info" id="page-indicator">Page 1 of 400</span>
+                        <button class="page-btn" id="btn-next-page">
+                            Next
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================================
+                 PAGE 4: MODEL PERFORMANCE
+            ====================================== -->
+            <section id="page-performance" class="page-section">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <div class="page-eyebrow">
+                            <span class="eyebrow-dot eyebrow-cyan"></span>
+                            ML Evaluation Metrics
+                        </div>
+                        <h1>Model Performance Analytics</h1>
+                        <p class="subtitle">Supervised learning classification metrics for the pre-trained Random Forest model</p>
+                    </div>
+                </div>
+
+                <!-- Performance KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card kpi-blue">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Model Accuracy</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="perf-accuracy">98.6%</span>
+                            </div>
+                            <span class="kpi-sub">Overall classification rate</span>
+                        </div>
+                        <div class="metric-radial" id="radial-accuracy"></div>
+                    </div>
+                    <div class="kpi-card kpi-green">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Precision</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="perf-precision">0.83</span>
+                            </div>
+                            <span class="kpi-sub">Positive predictive value</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-amber">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Recall</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="perf-recall">0.72</span>
+                            </div>
+                            <span class="kpi-sub">Sensitivity / True Positive Rate</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-purple">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">F1 Score</span>
+                            <div class="kpi-value-row">
+                                <span class="kpi-value" id="perf-f1">0.77</span>
+                            </div>
+                            <span class="kpi-sub">Harmonic mean of P & R</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Grid: CM + Feature Importances -->
+                <div class="perf-grid">
+                    <div class="glass-card">
+                        <div class="panel-header">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="12" x2="21" y2="12"/>
+                                <line x1="12" y1="3" x2="12" y2="21"/>
+                            </svg>
+                            <h3>Confusion Matrix</h3>
+                        </div>
+                        <div class="cm-grid">
+                            <div class="cm-cell cm-header"></div>
+                            <div class="cm-cell cm-header">Pred Normal</div>
+                            <div class="cm-cell cm-header">Pred Failure</div>
+
+                            <div class="cm-cell cm-header cm-row-header">Actual Normal</div>
+                            <div class="cm-cell cm-tn" id="cm-tn">
+                                <span class="cm-val">4,815</span>
+                                <span class="cm-tag">True Negative</span>
+                            </div>
+                            <div class="cm-cell cm-fp" id="cm-fp">
+                                <span class="cm-val">25</span>
+                                <span class="cm-tag">False Positive</span>
+                            </div>
+
+                            <div class="cm-cell cm-header cm-row-header">Actual Failure</div>
+                            <div class="cm-cell cm-fn" id="cm-fn">
+                                <span class="cm-val">45</span>
+                                <span class="cm-tag">False Negative</span>
+                            </div>
+                            <div class="cm-cell cm-tp" id="cm-tp">
+                                <span class="cm-val">115</span>
+                                <span class="cm-tag">True Positive</span>
+                            </div>
+                        </div>
+                        <p class="cm-caption">Evaluated on model inference sample from AI4I telemetry</p>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="panel-header">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            <h3>Feature Importances</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chart-feature-imp"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classification Report -->
+                <div class="glass-card report-card">
+                    <div class="panel-header">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        <h3>Classification Report</h3>
+                    </div>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="class-badge class-normal">Normal (0)</span></td>
+                                <td>0.9910</td><td>0.9950</td><td>0.9930</td><td>4,840</td>
+                            </tr>
+                            <tr>
+                                <td><span class="class-badge class-failure">Failure (1)</span></td>
+                                <td>0.8300</td><td>0.7200</td><td>0.7700</td><td>160</td>
+                            </tr>
+                            <tr class="report-avg-row">
+                                <td>Macro Avg</td><td>0.9105</td><td>0.8575</td><td>0.8815</td><td>5,000</td>
+                            </tr>
+                            <tr class="report-avg-row">
+                                <td>Weighted Avg</td><td>0.9858</td><td>0.9862</td><td>0.9858</td><td>5,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ======================================
+                 PAGE 5: ABOUT PROJECT
+            ====================================== -->
+            <section id="page-about" class="page-section">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <div class="page-eyebrow">
+                            <span class="eyebrow-dot"></span>
+                            System Documentation
+                        </div>
+                        <h1>About this Project</h1>
+                        <p class="subtitle">Architecture overview, ML pipeline, dataset details, and technology stack</p>
+                    </div>
+                </div>
+
+                <!-- About Cards -->
+                <div class="about-grid">
+                    <div class="glass-card about-card">
+                        <div class="about-icon-header">
+                            <div class="about-icon-wrap color-blue">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+                                </svg>
+                            </div>
+                            <h3>Project Purpose</h3>
+                        </div>
+                        <p>Unexpected industrial equipment failures cause high repair costs, emergency maintenance delays, and lost manufacturing output. This system leverages supervised machine learning to continuously process sensor signals and predict impending failure risks before critical downtime occurs.</p>
+                    </div>
+
+                    <div class="glass-card about-card">
+                        <div class="about-icon-header">
+                            <div class="about-icon-wrap color-amber">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                            </div>
+                            <h3>AI4I 2020 Dataset</h3>
+                        </div>
+                        <ul>
+                            <li><strong>10,000</strong> industrial machine telemetry records</li>
+                            <li><strong>Features:</strong> Air & Process Temp [K], Speed [rpm], Torque [Nm], Wear [min]</li>
+                            <li><strong>Product Variants:</strong> L (Low 50%), M (Medium 30%), H (High 20%)</li>
+                            <li><strong>Failure Modes:</strong> TWF, HDF, PWF, OSF, RNF</li>
+                            <li><strong>Target:</strong> Binary — 0 (Normal) / 1 (Failure)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ML Pipeline -->
+                <div class="glass-card pipeline-card">
+                    <div class="panel-header">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                        </svg>
+                        <h3>End-to-End ML Pipeline</h3>
+                    </div>
+                    <div class="pipeline-steps">
+                        <div class="pipeline-step">
+                            <div class="pipeline-step-num">01</div>
+                            <div class="pipeline-step-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            </div>
+                            <div class="pipeline-step-body">
+                                <h4>Sensor Data</h4>
+                                <p>Air/Process Temp, RPM, Torque, Wear signals</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="pipeline-step-num">02</div>
+                            <div class="pipeline-step-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            </div>
+                            <div class="pipeline-step-body">
+                                <h4>Preprocessing</h4>
+                                <p>One-Hot Encoding (Type_L, Type_M)</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="pipeline-step-num">03</div>
+                            <div class="pipeline-step-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                            </div>
+                            <div class="pipeline-step-body">
+                                <h4>ML Model</h4>
+                                <p>Random Forest Classifier (scikit-learn)</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="pipeline-step-num">04</div>
+                            <div class="pipeline-step-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            </div>
+                            <div class="pipeline-step-body">
+                                <h4>Prediction</h4>
+                                <p>Failure probability & risk level output</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </div>
+                        <div class="pipeline-step pipeline-step-final">
+                            <div class="pipeline-step-num">05</div>
+                            <div class="pipeline-step-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            </div>
+                            <div class="pipeline-step-body">
+                                <h4>Action</h4>
+                                <p>Preventive maintenance service triggered</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tech Stack -->
+                <div class="glass-card tech-card">
+                    <div class="panel-header">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                        </svg>
+                        <h3>Technology Stack</h3>
+                    </div>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <div class="tech-icon color-blue">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            </div>
+                            <span class="tech-name">Python 3.11</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon color-green">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            </div>
+                            <span class="tech-name">FastAPI</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon color-amber">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                            </div>
+                            <span class="tech-name">Scikit-Learn</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon color-purple">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                            </div>
+                            <span class="tech-name">Pandas & NumPy</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon color-cyan">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                            </div>
+                            <span class="tech-name">HTML5 & CSS3</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon color-orange">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            </div>
+                            <span class="tech-name">JavaScript ES6+</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon color-blue">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            </div>
+                            <span class="tech-name">Chart.js</span>
+                        </div>
+                        <div class="tech-item">
+                            <div class="tech-icon color-green">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            </div>
+                            <span class="tech-name">Random Forest ML</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

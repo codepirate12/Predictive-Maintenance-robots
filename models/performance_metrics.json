@@ -1,0 +1,69 @@
+{
+  "accuracy": 0.999,
+  "precision": 1.0,
+  "recall": 0.9706,
+  "f1": 0.9851,
+  "confusion_matrix": [
+    [
+      1932,
+      0
+    ],
+    [
+      2,
+      66
+    ]
+  ],
+  "test_set_size": 2000,
+  "test_set_failure_count": 68,
+  "training_method": "SMOTE-balanced training split; evaluated on untouched imbalanced test split",
+  "feature_importances": [
+    {
+      "feature": "PWF",
+      "importance": 0.1654
+    },
+    {
+      "feature": "Rotational speed [rpm]",
+      "importance": 0.1589
+    },
+    {
+      "feature": "HDF",
+      "importance": 0.1401
+    },
+    {
+      "feature": "Torque [Nm]",
+      "importance": 0.138
+    },
+    {
+      "feature": "TWF",
+      "importance": 0.1235
+    },
+    {
+      "feature": "OSF",
+      "importance": 0.1135
+    },
+    {
+      "feature": "Tool wear [min]",
+      "importance": 0.0795
+    },
+    {
+      "feature": "Type_L",
+      "importance": 0.0369
+    },
+    {
+      "feature": "Type_M",
+      "importance": 0.0181
+    },
+    {
+      "feature": "Air temperature [K]",
+      "importance": 0.0156
+    },
+    {
+      "feature": "Process temperature [K]",
+      "importance": 0.0103
+    },
+    {
+      "feature": "RNF",
+      "importance": 0.0001
+    }
+  ]
+}
