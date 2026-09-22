@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Predictive Maintenance and Fault Classification System ⚙️
 
 A modern, full-stack web application for predicting industrial machine failure risks based on telemetry and sensor data from the **AI4I 2020 Predictive Maintenance Dataset**.
@@ -101,3 +102,6 @@ Open your browser at:
 - `GET /api/charts/product-type` — Failure breakdown counts by Product Type.
 - `GET /api/charts/sensor-correlations` — Sampled telemetry correlation points for scatter and histogram plots.
 - `GET /api/performance` — Model evaluation metrics (`Accuracy`, `Precision`, `Recall`, `F1`, Confusion Matrix, Feature Importances).
+=======
+# Predictive-Maintenance-robots
+>>>>>>> 58e604184ef56708c81f09ff10b53e184b8503d1
